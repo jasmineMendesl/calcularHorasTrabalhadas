@@ -323,6 +323,48 @@ button:hover {
   font-size: clamp(1.35rem, 2vw, 1.8rem);
 }
 
+.daily-progress-header {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) auto;
+  gap: 24px;
+  align-items: center;
+}
+
+.daily-progress-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(90px, 1fr));
+  gap: 12px;
+}
+
+.daily-progress-stats > div {
+  display: grid;
+  gap: 6px;
+  min-width: 110px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: var(--panel-soft);
+}
+
+.daily-progress-stats span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.daily-progress-stats strong {
+  color: var(--primary-dark);
+  font-size: 1.35rem;
+}
+
+.daily-progress-track {
+  height: 22px;
+}
+
+.daily-progress-fill {
+  background: linear-gradient(90deg, var(--primary-dark), var(--accent));
+}
+
 .progress-header,
 .history-header {
   display: flex;
@@ -443,6 +485,10 @@ button:hover {
     grid-template-columns: 1fr;
   }
 
+  .daily-progress-header {
+    grid-template-columns: 1fr;
+  }
+
   .person-stats-grid {
     grid-template-columns: repeat(2, minmax(0, 220px));
   }
@@ -457,8 +503,13 @@ button:hover {
   .form-grid,
   .stats-grid,
   .person-stats-grid,
-  .pace-metrics {
+  .pace-metrics,
+  .daily-progress-stats {
     grid-template-columns: 1fr;
+  }
+
+  .daily-progress-stats > div {
+    min-width: 0;
   }
 
   .progress-header,

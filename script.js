@@ -22,6 +22,12 @@ const businessDayHours = document.querySelector('#business-day-hours');
 const businessDaysCount = document.querySelector('#business-days-count');
 const calendarDayHours = document.querySelector('#calendar-day-hours');
 const calendarDaysCount = document.querySelector('#calendar-days-count');
+const dailyGoalHours = document.querySelector('#daily-goal-hours');
+const dailyWorkedHours = document.querySelector('#daily-worked-hours');
+const dailyRemainingHours = document.querySelector('#daily-remaining-hours');
+const dailyStatusMessage = document.querySelector('#daily-status-message');
+const dailyProgressTrack = document.querySelector('.daily-progress-track');
+const dailyProgressFill = document.querySelector('#daily-progress-fill');
 const progressPercent = document.querySelector('#progress-percent');
 const progressFill = document.querySelector('#progress-fill');
 const statusMessage = document.querySelector('#status-message');
@@ -277,6 +283,26 @@ function getTotalHoursByPerson(person) {
   }, 0);
 }
 
+function getDateKey(date = new Date()) {
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+
+  return `${day}/${month}/${year}`;
+}
+
+function getHoursForDate(date = new Date()) {
+  const dateKey = getDateKey(date);
+
+  return entries.reduce((total, entry) => {
+    if (!String(entry.date).startsWith(dateKey)) {
+      return total;
+    }
+
+    return total + entry.hours;
+  }, 0);
+}
+
 function getRemainingDaysInMonth(date = new Date()) {
   const year = date.getFullYear();
   const month = date.getMonth();
@@ -404,19 +430,33 @@ function renderHistory() {
 }
 
 function render() {
+  const today = new Date();
   const totalHours = getTotalHours();
+  const todayHours = getHoursForDate(today);
   const jasmineHours = getTotalHoursByPerson('Jasmine');
   const pedroHours = getTotalHoursByPerson('Pedro');
   const totalEarned = totalHours * HOUR_VALUE;
   const missingHours = Math.max(GOAL_HOURS - totalHours, 0);
   const missingValue = missingHours * HOUR_VALUE;
   const percent = Math.min((totalHours / GOAL_HOURS) * 100, 100);
-  const remainingDays = getRemainingDaysInMonth();
+  const remainingDays = getRemainingDaysInMonth(today);
   const hoursPerBusinessDay = remainingDays.businessDays > 0
     ? missingHours / remainingDays.businessDays
     : 0;
   const hoursPerCalendarDay = remainingDays.calendarDays > 0
     ? missingHours / remainingDays.calendarDays
+    : 0;
+  const isBusinessDay = today.getDay() !== 0 && today.getDay() !== 6;
+  const missingHoursAtStartOfDay = Math.max(
+    GOAL_HOURS - (totalHours - todayHours),
+    0
+  );
+  const dailyGoal = isBusinessDay && remainingDays.businessDays > 0
+    ? missingHoursAtStartOfDay / remainingDays.businessDays
+    : 0;
+  const dailyMissing = Math.max(dailyGoal - todayHours, 0);
+  const dailyPercent = dailyGoal > 0
+    ? Math.min((todayHours / dailyGoal) * 100, 100)
     : 0;
 
   workedHours.textContent = formatHours(totalHours);
@@ -444,8 +484,25 @@ function render() {
     'dia corrido',
     'dias corridos'
   );
+  dailyGoalHours.textContent = formatHours(dailyGoal);
+  dailyWorkedHours.textContent = formatHours(todayHours);
+  dailyRemainingHours.textContent = formatHours(dailyMissing);
+  dailyProgressFill.style.width = `${dailyPercent}%`;
+  dailyProgressTrack.setAttribute('aria-valuenow', String(Math.round(dailyPercent)));
   progressPercent.textContent = `${Math.round(percent)}%`;
   progressFill.style.width = `${percent}%`;
+
+  if (!isBusinessDay) {
+    dailyStatusMessage.textContent = todayHours > 0
+      ? `${formatHours(todayHours)} registradas hoje, fora dos dias uteis.`
+      : 'Hoje nao e dia util, entao nao ha meta diaria.';
+  } else if (dailyGoal === 0) {
+    dailyStatusMessage.textContent = 'A meta mensal ja foi concluida.';
+  } else if (dailyMissing === 0) {
+    dailyStatusMessage.textContent = 'Meta do dia concluida.';
+  } else {
+    dailyStatusMessage.textContent = `Faltam ${formatHours(dailyMissing)} para concluir a meta de hoje.`;
+  }
 
   if (totalHours >= GOAL_HOURS) {
     statusMessage.textContent = 'Meta batida. Tudo que entrar agora e acima da meta.';

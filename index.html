@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Contador de Horas</title>
-  <link rel="stylesheet" href="style.css?v=20260611-1">
+  <link rel="stylesheet" href="style.css?v=20260611-2">
 </head>
 <body>
   <main class="app">
@@ -117,6 +117,41 @@
       </article>
     </section>
 
+    <section class="panel daily-progress-panel" aria-labelledby="daily-progress-title">
+      <div class="daily-progress-header">
+        <div>
+          <h2 id="daily-progress-title">Meta de hoje</h2>
+          <p id="daily-status-message">Calculando o ritmo necessario para hoje.</p>
+        </div>
+
+        <div class="daily-progress-stats">
+          <div>
+            <span>Meta</span>
+            <strong id="daily-goal-hours">0h</strong>
+          </div>
+          <div>
+            <span>Feito</span>
+            <strong id="daily-worked-hours">0h</strong>
+          </div>
+          <div>
+            <span>Falta</span>
+            <strong id="daily-remaining-hours">0h</strong>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="progress-track daily-progress-track"
+        role="progressbar"
+        aria-label="Progresso da meta de hoje"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-valuenow="0"
+      >
+        <div id="daily-progress-fill" class="progress-fill daily-progress-fill"></div>
+      </div>
+    </section>
+
     <section class="panel progress-panel" aria-labelledby="progress-title">
       <div class="progress-header">
         <div>
@@ -158,6 +193,6 @@
     </section>
   </main>
 
-  <script src="script.js?v=20260611-1"></script>
+  <script src="script.js?v=20260611-2"></script>
 </body>
 </html>
