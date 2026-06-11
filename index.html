@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contador de Horas</title>
+  <link rel="stylesheet" href="style.css?v=20260611-1">
+</head>
+<body>
+  <main class="app">
+    <section class="summary" aria-labelledby="page-title">
+      <div>
+        <p class="eyebrow">Meta mensal</p>
+        <h1 id="page-title">Contador de horas e valores</h1>
+        <p class="subtitle">Cada hora vale R$ 60,00. A meta e fechar 176 horas no mes.</p>
+      </div>
+
+      <div class="goal-card">
+        <span class="goal-label">Meta total</span>
+        <strong>176h</strong>
+        <span>R$ 10.560,00</span>
+      </div>
+    </section>
+
+    <section class="panel input-panel" aria-labelledby="add-title">
+      <div class="input-heading">
+        <h2 id="add-title">Adicionar horas</h2>
+        <p>Digite quantas horas voce fez e registre no contador.</p>
+      </div>
+
+      <form id="hours-form" class="hours-form">
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="person-input">Pessoa</label>
+            <select id="person-input" required>
+              <option value="">Selecione</option>
+              <option value="Jasmine">Jasmine</option>
+              <option value="Pedro">Pedro</option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="hours-input">Horas trabalhadas</label>
+            <input id="hours-input" type="text" placeholder="Ex: 1h 35m" required>
+          </div>
+
+          <div class="form-field form-field-wide">
+            <label for="description-input">Descricao</label>
+            <input id="description-input" type="text" placeholder="Ex: Ajustes na tela de login">
+          </div>
+
+          <div class="form-field form-field-wide">
+            <label for="jira-input">Link da task do Jira</label>
+            <input id="jira-input" type="url" placeholder="https://empresa.atlassian.net/browse/TASK-123">
+          </div>
+
+          <button type="submit">Adicionar</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="stats-grid" aria-label="Resumo do mes">
+      <article class="stat-card">
+        <span>Horas feitas</span>
+        <strong id="worked-hours">0h</strong>
+      </article>
+
+      <article class="stat-card">
+        <span>Valor feito</span>
+        <strong id="earned-value">R$ 0,00</strong>
+      </article>
+
+      <article class="stat-card">
+        <span>Faltam horas</span>
+        <strong id="remaining-hours">176h</strong>
+      </article>
+
+      <article class="stat-card">
+        <span>Falta em valor</span>
+        <strong id="remaining-value">R$ 10.560,00</strong>
+      </article>
+    </section>
+
+    <section class="pace-card" aria-labelledby="pace-title">
+      <div class="pace-heading">
+        <span>Ritmo para fechar a meta</span>
+        <strong id="pace-title"><span id="pace-remaining-hours">176h</span> restantes</strong>
+        <small id="pace-period">Ate o fim do mes</small>
+      </div>
+
+      <div class="pace-metrics">
+        <div class="pace-metric">
+          <span>Por dia util</span>
+          <strong id="business-day-hours">0h</strong>
+          <small id="business-days-count">0 dias uteis restantes</small>
+        </div>
+
+        <div class="pace-metric">
+          <span>Por dia corrido</span>
+          <strong id="calendar-day-hours">0h</strong>
+          <small id="calendar-days-count">0 dias corridos restantes</small>
+        </div>
+      </div>
+    </section>
+
+    <section class="person-stats-grid" aria-label="Resumo por pessoa">
+      <article class="stat-card person-stat-card">
+        <span>Jasmine ja fez</span>
+        <strong id="jasmine-total">0h</strong>
+        <small id="jasmine-value">R$ 0,00</small>
+      </article>
+
+      <article class="stat-card person-stat-card">
+        <span>Pedro ja fez</span>
+        <strong id="pedro-total">0h</strong>
+        <small id="pedro-value">R$ 0,00</small>
+      </article>
+    </section>
+
+    <section class="panel progress-panel" aria-labelledby="progress-title">
+      <div class="progress-header">
+        <div>
+          <h2 id="progress-title">Progresso</h2>
+          <p id="status-message">Voce ainda nao adicionou horas.</p>
+        </div>
+        <strong id="progress-percent">0%</strong>
+      </div>
+      <div class="progress-track" aria-hidden="true">
+        <div id="progress-fill" class="progress-fill"></div>
+      </div>
+    </section>
+
+    <section class="panel history-panel" aria-labelledby="history-title">
+      <div class="history-header">
+        <div>
+          <h2 id="history-title">Lancamentos</h2>
+          <p id="storage-status">Seu progresso fica salvo neste navegador.</p>
+        </div>
+        <button id="clear-button" class="secondary-button" type="button">Zerar</button>
+      </div>
+
+      <p id="sync-status" class="sync-status" aria-live="polite"></p>
+      <div class="history-table-wrap">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th scope="col">Dia e hora</th>
+              <th scope="col">Pessoa</th>
+              <th scope="col">Horas</th>
+              <th scope="col">Valor</th>
+              <th scope="col">Detalhes</th>
+              <th scope="col">Acao</th>
+            </tr>
+          </thead>
+          <tbody id="history-list"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js?v=20260611-1"></script>
+</body>
+</html>
