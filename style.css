@@ -103,8 +103,29 @@ h2 {
   font-size: 0.88rem;
 }
 
-.goal-card strong {
+.goal-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.goal-input-wrap input {
+  width: 150px;
+  min-height: 44px;
+  padding: 0 10px;
+  color: var(--primary-dark);
   font-size: 2rem;
+  font-weight: 700;
+}
+
+.goal-input-wrap span {
+  color: var(--primary-dark);
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+#monthly-goal-hours {
+  color: var(--muted);
 }
 
 .panel {

@@ -12,13 +12,16 @@
       <div>
         <p class="eyebrow">Meta mensal</p>
         <h1 id="page-title">Contador de horas e valores</h1>
-        <p class="subtitle">Cada hora vale R$ 60,00. A meta e fechar 176 horas no mes.</p>
+        <p id="goal-subtitle" class="subtitle">Cada hora vale R$ 60,00. A meta e fechar 176 horas no mes.</p>
       </div>
 
       <div class="goal-card">
-        <span class="goal-label">Meta total</span>
-        <strong>176h</strong>
-        <span>R$ 10.560,00</span>
+        <label class="goal-label" for="monthly-goal-input">Valor a receber</label>
+        <div class="goal-input-wrap">
+          <span>R$</span>
+          <input id="monthly-goal-input" type="number" min="1" step="1" value="10560" aria-label="Valor mensal a receber">
+        </div>
+        <span id="monthly-goal-hours">176h no mes</span>
       </div>
     </section>
 

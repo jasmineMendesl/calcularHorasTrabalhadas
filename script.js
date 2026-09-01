@@ -1,9 +1,14 @@
 const HOUR_VALUE = 60;
-const GOAL_HOURS = 176;
+const DEFAULT_GOAL_VALUE = 10560;
 const STORAGE_KEY = 'hourCounterEntries';
+const GOAL_VALUE_STORAGE_KEY = 'monthlyGoalValue';
+const LEGACY_GOAL_HOURS_STORAGE_KEY = 'monthlyGoalHours';
 const SPREADSHEET_API_URL = 'https://script.google.com/macros/s/AKfycbxvnESpg2ImihYg3TNDM03vYmcGQV50tNqeK9FHJ297KYlCXNMc_pYgl7dh_eGzM-Mp/exec';
 
 const form = document.querySelector('#hours-form');
+const goalSubtitle = document.querySelector('#goal-subtitle');
+const monthlyGoalInput = document.querySelector('#monthly-goal-input');
+const monthlyGoalHoursText = document.querySelector('#monthly-goal-hours');
 const personInput = document.querySelector('#person-input');
 const hoursInput = document.querySelector('#hours-input');
 const descriptionInput = document.querySelector('#description-input');
@@ -38,6 +43,7 @@ const syncStatus = document.querySelector('#sync-status');
 
 let entries = [];
 let isSyncing = false;
+let monthlyGoalValue = loadMonthlyGoalValue();
 
 const inputError = document.createElement('p');
 inputError.className = 'input-error';
@@ -92,6 +98,26 @@ function loadLocalEntries() {
   } catch {
     return [];
   }
+}
+
+function loadMonthlyGoalValue() {
+  const savedGoalValue = Number(localStorage.getItem(GOAL_VALUE_STORAGE_KEY));
+
+  if (Number.isFinite(savedGoalValue) && savedGoalValue > 0) {
+    return savedGoalValue;
+  }
+
+  const legacyGoalHours = Number(localStorage.getItem(LEGACY_GOAL_HOURS_STORAGE_KEY));
+
+  if (Number.isFinite(legacyGoalHours) && legacyGoalHours > 0) {
+    return legacyGoalHours * HOUR_VALUE;
+  }
+
+  return DEFAULT_GOAL_VALUE;
+}
+
+function saveMonthlyGoalValue() {
+  localStorage.setItem(GOAL_VALUE_STORAGE_KEY, String(monthlyGoalValue));
 }
 
 function saveLocalEntries() {
@@ -436,9 +462,12 @@ function render() {
   const jasmineHours = getTotalHoursByPerson('Jasmine');
   const pedroHours = getTotalHoursByPerson('Pedro');
   const totalEarned = totalHours * HOUR_VALUE;
-  const missingHours = Math.max(GOAL_HOURS - totalHours, 0);
+  const monthlyGoalHours = monthlyGoalValue / HOUR_VALUE;
+  const missingHours = Math.max(monthlyGoalHours - totalHours, 0);
   const missingValue = missingHours * HOUR_VALUE;
-  const percent = Math.min((totalHours / GOAL_HOURS) * 100, 100);
+  const percent = monthlyGoalHours > 0
+    ? Math.min((totalHours / monthlyGoalHours) * 100, 100)
+    : 0;
   const remainingDays = getRemainingDaysInMonth(today);
   const hoursPerBusinessDay = remainingDays.businessDays > 0
     ? missingHours / remainingDays.businessDays
@@ -448,7 +477,7 @@ function render() {
     : 0;
   const isBusinessDay = today.getDay() !== 0 && today.getDay() !== 6;
   const missingHoursAtStartOfDay = Math.max(
-    GOAL_HOURS - (totalHours - todayHours),
+    monthlyGoalHours - (totalHours - todayHours),
     0
   );
   const dailyGoal = isBusinessDay && remainingDays.businessDays > 0
@@ -459,6 +488,9 @@ function render() {
     ? Math.min((todayHours / dailyGoal) * 100, 100)
     : 0;
 
+  goalSubtitle.textContent = `Cada hora vale ${formatCurrency(HOUR_VALUE)}. A meta e fechar ${formatHours(monthlyGoalHours)} no mes.`;
+  monthlyGoalInput.value = String(monthlyGoalValue);
+  monthlyGoalHoursText.textContent = `${formatHours(monthlyGoalHours)} no mes`;
   workedHours.textContent = formatHours(totalHours);
   earnedValue.textContent = formatCurrency(totalEarned);
   jasmineTotal.textContent = formatHours(jasmineHours);
@@ -504,10 +536,10 @@ function render() {
     dailyStatusMessage.textContent = `Faltam ${formatHours(dailyMissing)} para concluir a meta de hoje.`;
   }
 
-  if (totalHours >= GOAL_HOURS) {
+  if (totalHours >= monthlyGoalHours) {
     statusMessage.textContent = 'Meta batida. Tudo que entrar agora e acima da meta.';
   } else if (totalHours > 0) {
-    statusMessage.textContent = `Faltam ${formatHours(missingHours)} para fechar ${formatCurrency(GOAL_HOURS * HOUR_VALUE)}.`;
+    statusMessage.textContent = `Faltam ${formatHours(missingHours)} para fechar ${formatCurrency(monthlyGoalValue)}.`;
   } else {
     statusMessage.textContent = 'Voce ainda nao adicionou horas.';
   }
@@ -571,6 +603,19 @@ form.addEventListener('submit', async (event) => {
     setSyncing(false);
     render();
   }
+});
+
+monthlyGoalInput.addEventListener('input', () => {
+  const goalValue = Number(monthlyGoalInput.value);
+
+  if (!Number.isFinite(goalValue) || goalValue <= 0) {
+    monthlyGoalInput.value = String(monthlyGoalValue);
+    return;
+  }
+
+  monthlyGoalValue = goalValue;
+  saveMonthlyGoalValue();
+  render();
 });
 
 clearButton.addEventListener('click', async () => {
